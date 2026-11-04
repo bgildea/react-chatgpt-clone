@@ -6,7 +6,11 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const API_KEY = '';
+const API_KEY = process.env.OPENAI_API_KEY;
+if (!API_KEY) {
+    console.error('Set OPENAI_API_KEY before starting the server.');
+    process.exit(1);
+}
 
 app.post('/completions', async (req, res) => {
     const options = {
@@ -27,6 +31,7 @@ app.post('/completions', async (req, res) => {
         res.send(data);
     } catch (error) {
         console.error(error);
+        res.status(502).send({ error: 'Could not reach the OpenAI API' });
     }
 });
 
