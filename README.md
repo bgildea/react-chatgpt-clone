@@ -45,3 +45,7 @@ This was a learning project, and it shows its age. If I built it today:
 - **Move to a current model** and add guardrails and evals
 
 My newer work on these ideas is in [telegram-claude-agent](https://github.com/bgildea/telegram-claude-agent), which handles multi-turn memory, tool use, guardrails and evaluation properly.
+
+## Licence
+
+MIT. See [LICENSE](LICENSE).
