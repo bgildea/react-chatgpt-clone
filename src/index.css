@@ -48,6 +48,9 @@ nav {
   list-style-type: none;
   padding: 15px 0;
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .main {
@@ -81,6 +84,7 @@ nav {
 }
 
 input {
+  box-sizing: border-box;
   width: 100%;
   border: none;
   font-size: 20px;
@@ -100,9 +104,24 @@ input:focus {
 
 #submit {
   position: absolute;
-  bottom: 15px;
+  bottom: 0;
   right: 0;
+  margin: 0;
+  padding: 12px 15px;
+  border: none;
+  font-size: 20px;
   cursor: pointer;
+}
+
+#submit:disabled {
+  opacity: 0.4;
+  cursor: wait;
+}
+
+.error {
+  color: #ff8a8a;
+  font-size: 14px;
+  margin: 0 0 10px;
 }
 
 .feed {
@@ -111,6 +130,7 @@ input:focus {
 }
 
 .feed li {
+  box-sizing: border-box;
   display: flex;
   background-color: #444654;
   width: 100%;

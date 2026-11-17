@@ -1,50 +1,72 @@
 # react-chatgpt-clone
 
-A ChatGPT-style chat interface built in React, with a small Express server that calls the OpenAI Chat Completions API. I built it in early 2023 to learn how chat products handle conversation state and history before I started building agents on Claude.
+[![CI](https://github.com/bgildea/react-chatgpt-clone/actions/workflows/ci.yml/badge.svg)](https://github.com/bgildea/react-chatgpt-clone/actions/workflows/ci.yml)
+![React 19](https://img.shields.io/badge/React-19-blue)
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
+
+A chat interface built in React, with a small Express server that calls the OpenAI Chat Completions API. I first built it in early 2023 to learn how chat products handle conversation state. In November 2026 I came back to it and fixed what I had listed as its weaknesses: it now sends the whole conversation, validates input, has tests and runs in CI.
+
+![Two-turn conversation in the app, with the chat listed in the sidebar](docs/screenshot.png)
 
 ## What it does
 
-- Chat with a model through a familiar sidebar-and-conversation layout
-- Start new chats; previous conversations appear in the sidebar by title
+- Chat with a model in a sidebar-and-conversation layout
+- Multi-turn memory: every request carries the conversation so far, so follow-up questions work
+- Start new chats and switch between them from the sidebar
 - Keeps the API key on the server, never in the browser
+- Shows a clear error when something fails, instead of failing silently
 
 ## How it's put together
 
 ```mermaid
 flowchart LR
-    A[React app: App.js] -- POST /completions --> B[Express server: server.js]
+    A[React app<br/>src/App.jsx] -- "POST /completions<br/>{ messages }" --> B[Express server<br/>server/app.js]
+    B -- "validate, trim to last 20" --> B
     B -- Bearer OPENAI_API_KEY --> C[OpenAI Chat Completions API]
+    C -- reply --> B -- "{ message } only" --> A
 ```
 
-| File | Role |
+| Path | Role |
 | --- | --- |
-| `App.js` | UI and client state: current chat, history, titles |
-| `server.js` | Proxy to the OpenAI API so the key stays server-side |
-| `index.js`, `index.css` | React entry point and styling |
+| `src/App.jsx` | UI and client state: chats, messages, loading and errors |
+| `server/app.js` | Validates the conversation and proxies it to the API |
+| `server/index.js` | Starts the server on port 8000 |
+| `tests/` | Vitest tests for the server and the UI |
 
-These files are the `src` of a standard React app (Create React App or Vite).
+### Guardrails on the server
+
+- Only `user` and `assistant` roles are accepted, so a client cannot inject a `system` message
+- At most 20 messages and 4,000 characters per message, with a 100 KB body limit, to keep costs bounded
+- Bad input gets a 400 before any API call is made
+- Upstream errors return a plain message, never the raw API response
 
 ## Run it
 
+Needs Node 22.22 or later.
+
 ```bash
-npm install express cors
-export OPENAI_API_KEY=your-key
-node server.js            # listens on port 8000
+npm install
+export OPENAI_API_KEY=your-key   # optional: OPENAI_MODEL, defaults to gpt-4o-mini
+npm run server                   # API on port 8000
+npm run dev                      # app on http://localhost:5173
 ```
 
-Then drop `App.js`, `index.js` and `index.css` into a new React app's `src/` folder and start it.
+Vite forwards `/completions` to the server, so the browser never sees the key.
 
-## What I'd do differently now
+## Tests
 
-This was a learning project, and it shows its age. If I built it today:
+```bash
+npm test        # 15 tests: message building, validation, error handling, multi-turn UI
+npm run lint
+```
 
-- **Send the whole conversation, not just the last message.** The server currently sends one message, so the model has no memory of earlier turns
+The tests never call the real API: the server takes an injected `fetch`, and the UI test passes a fake one.
+
+## What I'd still do next
+
 - **Stream responses** token by token instead of waiting for the full reply
-- **Persist history** rather than keeping it in component state
-- **Add tests** around the state handling in `App.js`
-- **Move to a current model** and add guardrails and evals
-
-My newer work on these ideas is in [telegram-claude-agent](https://github.com/bgildea/telegram-claude-agent), which handles multi-turn memory, tool use, guardrails and evaluation properly.
+- **Persist history** so chats survive a page reload
+- **Add evals** for answer quality, as I do in [telegram-claude-agent](https://github.com/bgildea/telegram-claude-agent), which covers tool use, guardrails and evaluation in more depth
 
 ## Licence
 
