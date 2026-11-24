@@ -1,6 +1,6 @@
-# react-chatgpt-clone
+# react-chat-guardrails
 
-[![CI](https://github.com/bgildea/react-chatgpt-clone/actions/workflows/ci.yml/badge.svg)](https://github.com/bgildea/react-chatgpt-clone/actions/workflows/ci.yml)
+[![CI](https://github.com/bgildea/react-chat-guardrails/actions/workflows/ci.yml/badge.svg)](https://github.com/bgildea/react-chat-guardrails/actions/workflows/ci.yml)
 ![React 19](https://img.shields.io/badge/React-19-blue)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
