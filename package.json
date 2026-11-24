@@ -1,5 +1,5 @@
 {
-  "name": "react-chatgpt-clone",
+  "name": "react-chat-guardrails",
   "version": "1.1.0",
   "private": true,
   "description": "A chat interface in React with a small Express proxy to the OpenAI Chat Completions API.",
